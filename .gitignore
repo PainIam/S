@@ -1,0 +1,9 @@
+# Ignore the entire build directory
+build/
+bin/
+lib/
+
+# Ignore IDE specific files if you use them
+.vscode/
+.idea/
+*.user
