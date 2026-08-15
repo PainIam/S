@@ -126,11 +126,11 @@ Expr Parser::primary() {
     }
 
     // fail safe (there is not expression, atleast a valid one)
-    throw error(peek(), "lebelletse polelo");
+    throw error(peek(), "lebelletsoe polelo");
 }
 
-void Parser::consume(TokenType type, const std::string& message) {
-    if (match({TokenType::RIGHT_PAREN})) advance();
+Token Parser::consume(TokenType type, const std::string& message) {
+    if (check(type)) return advance();
 
     throw error(peek(), message);
 }

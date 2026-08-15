@@ -26,7 +26,7 @@ class Parser {
         Expr factor();
         Expr unary();
         Expr primary();
-        void consume(TokenType type, const std::string& message);
+        Token consume(TokenType type, const std::string& message);
         ParseError error(Token token, const std::string& message);
 
     public:
