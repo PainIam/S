@@ -8,6 +8,8 @@
 
 #include "Scanner.h"
 #include "Token.h"
+#include "Parser.h"
+#include "AstPrinter.h"
 
 extern class S* uni_pointer;
 
@@ -63,14 +65,25 @@ class S {
         void run(const std::string& source) {
             Scanner scanner = Scanner(source);
             std::vector<Token> tokens = scanner.scanTokens();
+            Parser parser = Parser(tokens);
+            Expr expression = parser.parse();
 
-            for (const auto& t : tokens) {
-                std::cout << t << "\n";
-            }
+            if (hadError) return;
+
+            prettyPrint(expression);
+            std::cout << "\n";
         }
 
         void error(int line, const std::string& message) {
             report(line, "", message);
+        }
+
+        void error(Token token, const std::string& message) {
+            if (token.type == TokenType::EOFF) {
+                report(token.line, "qetellong", message);
+            } else {
+                report(token.line, "ho ' " + token.lexeme + "'", message);
+            }
         }
 
 };

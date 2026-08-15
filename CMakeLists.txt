@@ -13,4 +13,6 @@ add_executable(s
     src/Token.cc
     src/Scanner.cc
     src/AstPrinter.cc
+    src/Parser.cc
+    src/ParseError.h
 )
