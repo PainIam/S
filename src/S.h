@@ -10,6 +10,7 @@
 #include "Token.h"
 #include "Parser.h"
 #include "AstPrinter.h"
+#include "Interpreter.h"
 
 extern class S* uni_pointer;
 
@@ -17,11 +18,10 @@ class S {
 
     private:
         bool hadError = false;
-
-
+        Interpreter interpreter = Interpreter();
     
         void report(int line, const std::string& where, const std::string& message) {
-            std::cerr << "mola [" << line << "] Phoso ho " << where << ": " << message << "\n";
+            std::cerr << "mola [" << line << "] Phoso " << where << ": " << message << "\n";
             hadError = true;
         }
 
@@ -70,7 +70,7 @@ class S {
 
             if (hadError) return;
 
-            prettyPrint(expression);
+            interpreter.execute(expression);
             std::cout << "\n";
         }
 
