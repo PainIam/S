@@ -5,7 +5,7 @@
 
 #include "Expr.h"
 #include "Token.h"
-#include "ParseError.h"
+#include "runTimeError.h"
 
 class Parser {
     private:
@@ -27,7 +27,7 @@ class Parser {
         Expr unary();
         Expr primary();
         Token consume(TokenType type, const std::string& message);
-        ParseError error(Token token, const std::string& message);
+        RunTimeError error(Token token, const std::string& message);
 
     public:
         Parser (const std::vector<Token>& tokens);

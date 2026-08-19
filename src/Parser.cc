@@ -6,7 +6,7 @@ Parser::Parser(const std::vector<Token>& tokens) : list(tokens) {} // list of to
 Expr Parser::parse() {
     try {
         return expression();
-    } catch(ParseError e) {
+    } catch(RunTimeError e) {
         return nullptr;
     }
 }
@@ -135,10 +135,10 @@ Token Parser::consume(TokenType type, const std::string& message) {
     throw error(peek(), message);
 }
 
-ParseError Parser::error(Token token, const std::string& message) {
+RunTimeError Parser::error(Token token, const std::string& message) {
     // returns a throwable and calls S.h's error overloaded f:n
     uni_pointer->error(token, message);
-    return ParseError(message);
+    return RunTimeError(token, message);
 }
 
 void Parser::sync() {

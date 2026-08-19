@@ -11,6 +11,7 @@
 #include "Parser.h"
 #include "AstPrinter.h"
 #include "Interpreter.h"
+#include "runTimeError.h"
 
 extern class S* uni_pointer;
 
@@ -18,13 +19,13 @@ class S {
 
     private:
         bool hadError = false;
+        bool hadRunTimeError = false;
         Interpreter interpreter = Interpreter();
     
         void report(int line, const std::string& where, const std::string& message) {
             std::cerr << "mola [" << line << "] Phoso " << where << ": " << message << "\n";
             hadError = true;
         }
-
 
     public:
         void runFile(const std::string& path) {
@@ -42,7 +43,8 @@ class S {
             run(ss.str());
 
             // the file had errors, 65 is an input error.
-            std::exit(65);
+            if (hadError) std::exit(65);
+            if (hadRunTimeError) std::exit(75);
         }
         
         void runPrompt() {
@@ -71,7 +73,7 @@ class S {
             if (hadError) return;
 
             interpreter.execute(expression);
-            std::cout << "\n";
+            // std::cout << "\n";
         }
 
         void error(int line, const std::string& message) {
@@ -84,6 +86,11 @@ class S {
             } else {
                 report(token.line, "ho ' " + token.lexeme + "'", message);
             }
+        }
+
+        void runtimeError(RunTimeError e) {
+            std::cout << e.what() << "\n [mola " << e.token.line << "]\n";
+            hadRunTimeError = true;
         }
 
 };

@@ -11,6 +11,8 @@ private:
     std::string stringify(const Literal& object);
     bool isEqual(const Literal& left, const Literal& right);
     Literal interpret(const Expr& expr);
+    void checkNumberOperands(const Token& op, const Literal& left, const Literal& right);
+    void checkNumberOperands(const Token& op, const Literal& object);
 public:
     void execute(const Expr& expr);
 };
