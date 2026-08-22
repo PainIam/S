@@ -6,6 +6,7 @@
 #include "Expr.h"
 #include "Token.h"
 #include "runTimeError.h"
+#include "Stmt.h"
 
 class Parser {
     private:
@@ -19,6 +20,9 @@ class Parser {
         Token previous();
         Token advance();
 
+        Stmt statement();
+        Stmt printStatement();
+        Stmt exprStatement();
         Expr expression();
         Expr equality();
         Expr comparison();
@@ -31,6 +35,6 @@ class Parser {
 
     public:
         Parser (const std::vector<Token>& tokens);
-        Expr parse();
+        std::vector<Stmt> parse();
 
 };

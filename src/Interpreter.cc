@@ -4,16 +4,16 @@
 #include "runTimeError.h"
 #include "S.h"
 
+
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
 
-void Interpreter::execute(const Expr& expr) {
-
-try {    
-    Literal result = interpret(expr);
-    std::cout << stringify(result) << "\n";
-} catch(RunTimeError error) {
-    uni_pointer->runtimeError(error);
-}
+void Interpreter::execute(const std::vector<Stmt>& statements) {
+    try {
+        for (const auto& statement : statements) 
+            visitStmt(statement);
+    } catch(RunTimeError error) {
+        uni_pointer->runtimeError(error);
+    }
 }
 
 void Interpreter::checkNumberOperands(const Token& op, const Literal& left, const Literal& right) {
@@ -53,6 +53,19 @@ std::string Interpreter::stringify(const Literal& object) {
     }
 
     return nullptr;
+}
+
+void Interpreter::visitStmt(const Stmt& stmt) {
+    std::visit(overload{
+
+        [this](const PrintStmt& node) {
+            Literal object = interpret(*node.expr);
+            std::cout << stringify(object);
+        },
+        [this](const ExprStmt& node){
+            Literal object = interpret(*node.expr);
+        }
+    }, stmt);
 }
 
 Literal Interpreter::interpret(const Expr& expr) {

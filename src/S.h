@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <sstream>
 
 #include "Scanner.h"
@@ -12,6 +13,7 @@
 #include "AstPrinter.h"
 #include "Interpreter.h"
 #include "runTimeError.h"
+#include "Stmt.h"
 
 extern class S* uni_pointer;
 
@@ -68,12 +70,12 @@ class S {
             Scanner scanner = Scanner(source);
             std::vector<Token> tokens = scanner.scanTokens();
             Parser parser = Parser(tokens);
-            Expr expression = parser.parse();
+            std::vector<Stmt> statements = parser.parse();
 
             if (hadError) return;
 
-            interpreter.execute(expression);
-            // std::cout << "\n";
+            interpreter.execute(statements);
+            std::cout << "\n";
         }
 
         void error(int line, const std::string& message) {

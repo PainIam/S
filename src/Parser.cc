@@ -3,12 +3,36 @@
 
 Parser::Parser(const std::vector<Token>& tokens) : list(tokens) {} // list of tokens is so self - explanatory
 
-Expr Parser::parse() {
-    try {
-        return expression();
-    } catch(RunTimeError e) {
-        return nullptr;
+std::vector<Stmt> Parser::parse() {
+    std::vector<Stmt> statements;
+    while (!isAtEnd()) {
+        statements.push_back(statement());
     }
+
+    return statements;
+}
+
+Stmt Parser::statement() {
+    // for now return either print or expr statement
+    if (match({TokenType::NGOLA})) return printStatement();
+
+    return exprStatement();
+}
+
+Stmt Parser::printStatement()  {
+
+    Expr expr = expression();
+    consume(TokenType::SEMICOLON, "lebelletse ';' kamora polelo");
+
+    return Stmt{PrintStmt{ std::make_unique<Expr>(std::move(expr)) }};
+}
+
+Stmt Parser::exprStatement() {
+    Expr expr = expression();
+
+    consume(TokenType::SEMICOLON, "lebelletse ';' kamora polelo");
+
+    return Stmt{ExprStmt{ std::make_unique<Expr>(std::move(expr)) }};
 }
 
 bool Parser::match(std::initializer_list<TokenType> types) {
@@ -101,7 +125,7 @@ Expr Parser::factor() {
 Expr Parser::unary() {
     // interesting case, we should recursively call this function as it's grammar
     // unary       → ( "!" | "-" ) unary | primary ; suggests
-    // after finding the op, we call ourselves again to get a primary expression, or even we found not op, primary will be required either way
+    // after finding the op, we call ourselves again to get a primary expression, or even if we found no op, primary will be required either way
     if (match({TokenType::BANG, TokenType::MINUS})) {
         Token op = previous();
         Expr right = unary();
