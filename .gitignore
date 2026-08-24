@@ -7,4 +7,3 @@ lib/
 .vscode/
 .idea/
 *.user
-*.gitignore

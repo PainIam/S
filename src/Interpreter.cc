@@ -44,13 +44,11 @@ std::string Interpreter::stringify(const Literal& object) {
         return std::get<std::string>(object);
     }
 
-    if (std::holds_alternative<double>(object)) {
-        std::stringstream ss;
 
-        ss << std::get<double>(object);
-
-        return ss.str();
-    }
+    // this is allowed since Literal has finite types defined within
+    std::stringstream ss;
+    ss << std::get<double>(object);
+    return ss.str();
 
     return nullptr;
 }
@@ -60,7 +58,7 @@ void Interpreter::visitStmt(const Stmt& stmt) {
 
         [this](const PrintStmt& node) {
             Literal object = interpret(*node.expr);
-            std::cout << stringify(object);
+            std::cout << stringify(object) << "\n";
         },
         [this](const ExprStmt& node){
             Literal object = interpret(*node.expr);

@@ -74,12 +74,16 @@ void Scanner::scanToken() {
             } else if (match('*')) {
                 while (!isAtEnd() && !(peek() == '*' && peekNext() == '/')) {
                     advance();
+                    if (peek() == '\n') line++;
+            
                 }
 
 
                 // consume the * and /
                 advance();
-                advance();                
+                advance();       
+                
+                if (peek() == '\n') line++;
 
                 // immediately throw an error if we got to the end without the comment being closed
                 if (isAtEnd()) {

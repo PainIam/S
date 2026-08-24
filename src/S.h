@@ -75,7 +75,7 @@ class S {
             if (hadError) return;
 
             interpreter.execute(statements);
-            std::cout << "\n";
+            // std::cout << "\n";
         }
 
         void error(int line, const std::string& message) {

@@ -1,0 +1,6 @@
+: Create the statement type, there are 2 types of statements
+: 2 types of new statements, the expr stmt / print stmt, both hold an expr ptr
+
+a program is a list of statements
+
+program → statement* EOF ;
