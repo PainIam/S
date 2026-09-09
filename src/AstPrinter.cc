@@ -30,6 +30,7 @@ void prettyPrint(const Expr& expr) {
             std::cout << node.op.lexeme << " ";
             prettyPrint(*node.right);
             std::cout << ")";
-        }
+        },
+        [](const Var& node){ std::cout << "temp fix" << "\n"; }
     }, expr);
 }

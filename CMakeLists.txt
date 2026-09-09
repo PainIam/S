@@ -13,8 +13,8 @@ add_executable(s
     src/S.cc
     src/Token.cc
     src/Scanner.cc
-    src/AstPrinter.cc
     src/Parser.cc
     src/runTimeError.h
     src/Interpreter.cc
+    src/Environment.cc
 )

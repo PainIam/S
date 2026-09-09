@@ -20,10 +20,13 @@ class Parser {
         Token previous();
         Token advance();
 
+        Stmt declaration();
+        Stmt varDeclaration();
         Stmt statement();
         Stmt printStatement();
         Stmt exprStatement();
         Expr expression();
+        Expr assignment();
         Expr equality();
         Expr comparison();
         Expr term();

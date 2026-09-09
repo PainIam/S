@@ -6,6 +6,7 @@
 #include "Expr.h"
 #include "Token.h"
 #include "Stmt.h"
+#include "Environment.h"
 
 class Interpreter {
 private:
@@ -16,6 +17,7 @@ private:
     void checkNumberOperands(const Token& op, const Literal& left, const Literal& right);
     void checkNumberOperands(const Token& op, const Literal& object);
     void visitStmt(const Stmt& stmt);
+    Environment environment;
 public:
     void execute(const std::vector<Stmt>& statements);
 };

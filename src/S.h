@@ -10,7 +10,6 @@
 #include "Scanner.h"
 #include "Token.h"
 #include "Parser.h"
-#include "AstPrinter.h"
 #include "Interpreter.h"
 #include "runTimeError.h"
 #include "Stmt.h"

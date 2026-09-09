@@ -50,7 +50,6 @@ std::string Interpreter::stringify(const Literal& object) {
     ss << std::get<double>(object);
     return ss.str();
 
-    return nullptr;
 }
 
 void Interpreter::visitStmt(const Stmt& stmt) {
@@ -61,8 +60,18 @@ void Interpreter::visitStmt(const Stmt& stmt) {
             std::cout << stringify(object) << "\n";
         },
         [this](const ExprStmt& node){
-            Literal object = interpret(*node.expr);
-        }
+            interpret(*node.expr);
+        },
+        [this](const VarStmt& node) {
+            Literal object = nullptr;
+
+            if (node.ini != nullptr) {
+                object = interpret(*node.ini);
+            }
+
+            environment.define(node.name.lexeme, object);
+        },
+        [this](std::monostate){ return; } 
     }, stmt);
 }
 
@@ -132,6 +141,18 @@ Literal Interpreter::interpret(const Expr& expr) {
             }
 
             return nullptr;
+        },
+
+        [this](const Var& node) -> Literal {
+            return environment.get(node.name);
+        },
+
+        [this](const Assign& node) -> Literal {
+            Literal object = interpret(*node.value);
+
+            environment.assign(node.name, object);
+            
+            return object;
         }
     }, expr);
 }

@@ -1,15 +1,40 @@
 #include "Parser.h"
 #include "S.h"
 
+#include <variant>
+
 Parser::Parser(const std::vector<Token>& tokens) : list(tokens) {} // list of tokens is so self - explanatory
 
 std::vector<Stmt> Parser::parse() {
     std::vector<Stmt> statements;
     while (!isAtEnd()) {
-        statements.push_back(statement());
+        statements.push_back(declaration());
     }
 
     return statements;
+}
+
+Stmt Parser::declaration() {
+    try {
+        if (match({TokenType::NTHO})) return varDeclaration();
+
+        return statement();
+    } catch (RunTimeError e) {
+        sync();
+        return std::monostate{};
+    }
+}
+
+Stmt Parser::varDeclaration() {
+    Token name = consume(TokenType::IDENTIFIER, "lebeletsoe lebitso la ntho(object / variable name)");
+
+    Expr ini = nullptr;
+    if (match({TokenType::EQUAL})) {
+        ini = expression();
+    }
+    consume(TokenType::SEMICOLON, "lebelletsoe ';' kamora polelo");
+    return Stmt{VarStmt{ name, std::make_unique<Expr>(std::move(ini))}};
+
 }
 
 Stmt Parser::statement() {
@@ -57,7 +82,6 @@ bool Parser::isAtEnd() {
 }
 
 Token Parser::peek() {
-    // returns token[current]
     return list[current];
 }
 
@@ -71,7 +95,29 @@ Token Parser::previous() {
 }
 
 Expr Parser::expression() {
-    return equality();
+    return assignment();
+}
+
+Expr Parser::assignment() {
+
+    // get var.expr
+    Expr expr = equality();
+
+    if (match({TokenType::EQUAL})) {
+        Token token = previous();
+        Expr value = assignment(); // recursively call assignment, which should evaluate the expr without getting in this code block again
+
+        if (std::holds_alternative<Var>(expr)) {
+            Token name = std::get<Var>(expr).name;
+
+            return Expr{Assign{name, std::make_unique<Expr>(std::move(value))}};
+        }
+
+        error(token, "Ntho e abeloang ha ea nepahala."); // if expr is not a variable then we are assigning to some bs
+
+    }
+
+    return expr;
 }
 
 Expr Parser::equality() {
@@ -147,6 +193,10 @@ Expr Parser::primary() {
         Expr expr = expression();
         consume(TokenType::RIGHT_PAREN, "lebelletsoe ')' ka mor'a polelo.");
         return Expr{Grouping{std::make_unique<Expr>(std::move(expr))}};
+    }
+
+    if (match({TokenType::IDENTIFIER})) {
+        return Expr{Var{previous()}};
     }
 
     // fail safe (there is not expression, atleast a valid one)

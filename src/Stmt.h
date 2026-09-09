@@ -3,11 +3,13 @@
 #include <memory>
 
 #include "Expr.h"
+#include "Token.h"
 
 struct PrintStmt;
 struct ExprStmt;
+struct VarStmt;
 
-using Stmt = std::variant<PrintStmt, ExprStmt>;
+using Stmt = std::variant<std::monostate, PrintStmt, ExprStmt, VarStmt>;
 
 struct ExprStmt {
     std::unique_ptr<Expr> expr;
@@ -15,4 +17,9 @@ struct ExprStmt {
 
 struct PrintStmt {
     std::unique_ptr<Expr> expr;
+};
+
+struct VarStmt {
+    Token name;
+    std::unique_ptr<Expr> ini;
 };
