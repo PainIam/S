@@ -40,8 +40,20 @@ Stmt Parser::varDeclaration() {
 Stmt Parser::statement() {
     // for now return either print or expr statement
     if (match({TokenType::NGOLA})) return printStatement();
+    if (match({TokenType::LEFT_BRACE})) return Stmt{Block{block()}};
 
     return exprStatement();
+}
+
+std::vector<Stmt> Parser::block() {
+    std::vector<Stmt> statements;
+
+    while(!check(TokenType::RIGHT_BRACE) && !isAtEnd()) { // explicit isatend check to avoid inf loop incase of no closing brace
+        statements.push_back(declaration());
+    }
+
+    consume(TokenType::RIGHT_BRACE, "lebelletse '}' ");
+    return statements;
 }
 
 Stmt Parser::printStatement()  {

@@ -25,6 +25,7 @@ class Parser {
         Stmt statement();
         Stmt printStatement();
         Stmt exprStatement();
+        std::vector<Stmt> block();
         Expr expression();
         Expr assignment();
         Expr equality();

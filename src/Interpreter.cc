@@ -7,6 +7,9 @@
 
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
 
+Interpreter::Interpreter() { environment = new Environment(); }
+Interpreter::~Interpreter() { delete environment; }
+
 void Interpreter::execute(const std::vector<Stmt>& statements) {
     try {
         for (const auto& statement : statements) 
@@ -15,6 +18,8 @@ void Interpreter::execute(const std::vector<Stmt>& statements) {
         uni_pointer->runtimeError(error);
     }
 }
+
+
 
 void Interpreter::checkNumberOperands(const Token& op, const Literal& left, const Literal& right) {
     if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) {
@@ -59,7 +64,7 @@ void Interpreter::visitStmt(const Stmt& stmt) {
             Literal object = interpret(*node.expr);
             std::cout << stringify(object) << "\n";
         },
-        [this](const ExprStmt& node){
+        [this](const ExprStmt& node) {
             interpret(*node.expr);
         },
         [this](const VarStmt& node) {
@@ -69,10 +74,31 @@ void Interpreter::visitStmt(const Stmt& stmt) {
                 object = interpret(*node.ini);
             }
 
-            environment.define(node.name.lexeme, object);
+            environment->define(node.name.lexeme, object);
+        },
+        [this](const Block& node) {
+            executeBlock(node.statements, new Environment(*environment));
         },
         [this](std::monostate){ return; } 
     }, stmt);
+}
+
+void Interpreter::executeBlock(const std::vector<Stmt>& statements, Environment* env) {
+    Environment* previous = this->environment;
+
+    this->environment = env;
+    try {
+        for (const auto& statement : statements) {
+            visitStmt(statement);
+        }
+    } catch (...) {
+        this->environment = previous;
+        delete env;
+        throw;
+    }
+
+    this->environment = previous;
+    delete env;
 }
 
 Literal Interpreter::interpret(const Expr& expr) {
@@ -144,13 +170,13 @@ Literal Interpreter::interpret(const Expr& expr) {
         },
 
         [this](const Var& node) -> Literal {
-            return environment.get(node.name);
+            return environment->get(node.name);
         },
 
         [this](const Assign& node) -> Literal {
             Literal object = interpret(*node.value);
 
-            environment.assign(node.name, object);
+            environment->assign(node.name, object);
             
             return object;
         }

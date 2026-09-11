@@ -17,7 +17,12 @@ private:
     void checkNumberOperands(const Token& op, const Literal& left, const Literal& right);
     void checkNumberOperands(const Token& op, const Literal& object);
     void visitStmt(const Stmt& stmt);
-    Environment environment;
+    Environment* environment;
+    void executeBlock(const std::vector<Stmt>& statements, Environment* env);
+
 public:
+    Interpreter();
+    ~Interpreter();
     void execute(const std::vector<Stmt>& statements);
+
 };
