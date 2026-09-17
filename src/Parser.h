@@ -23,6 +23,7 @@ class Parser {
         Stmt declaration();
         Stmt varDeclaration();
         Stmt statement();
+        Stmt ifStatement();
         Stmt printStatement();
         Stmt exprStatement();
         std::vector<Stmt> block();

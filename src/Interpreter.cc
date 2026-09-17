@@ -79,6 +79,13 @@ void Interpreter::visitStmt(const Stmt& stmt) {
         [this](const Block& node) {
             executeBlock(node.statements, new Environment(*environment));
         },
+        [this](const IfStmt& node) {
+            if (is_true(interpret(*node.condition))) {
+                visitStmt(*node.thenBranch);
+            } else if (!std::holds_alternative<std::monostate>(*node.elseBranch)) {
+                visitStmt(*node.elseBranch);
+            }
+        },
         [this](std::monostate){ return; } 
     }, stmt);
 }

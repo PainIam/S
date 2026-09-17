@@ -10,8 +10,9 @@ struct PrintStmt;
 struct ExprStmt;
 struct VarStmt;
 struct Block;
+struct IfStmt;
 
-using Stmt = std::variant<std::monostate, PrintStmt, ExprStmt, VarStmt, Block>;
+using Stmt = std::variant<std::monostate, PrintStmt, ExprStmt, VarStmt, Block, IfStmt>;
 
 struct ExprStmt {
     std::unique_ptr<Expr> expr;
@@ -28,4 +29,10 @@ struct VarStmt {
 
 struct Block {
     std::vector<Stmt> statements;
+};
+
+struct IfStmt {
+    std::unique_ptr<Expr> condition;
+    std::unique_ptr<Stmt> thenBranch;
+    std::unique_ptr<Stmt> elseBranch;
 };

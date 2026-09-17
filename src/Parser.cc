@@ -38,17 +38,37 @@ Stmt Parser::varDeclaration() {
 }
 
 Stmt Parser::statement() {
-    // for now return either print or expr statement
+    if (match({TokenType::HAEBA})) return ifStatement();
     if (match({TokenType::NGOLA})) return printStatement();
     if (match({TokenType::LEFT_BRACE})) return Stmt{Block{block()}};
 
     return exprStatement();
 }
 
+Stmt Parser::ifStatement() {
+    consume(TokenType::LEFT_PAREN, "lebelletsoe '(' kamora 'haeba'");
+    Expr condition = expression();
+    consume(TokenType::RIGHT_PAREN, "lebelletsoe ')' kamora polelo ea haeba");
+
+    Stmt thenBrach = statement();
+    Stmt elseBranch = std::monostate{};
+    if (match({TokenType::HO_SENG_JOALO})) {
+        elseBranch = statement();
+    }
+
+    return Stmt { IfStmt 
+                    {
+                        std::make_unique<Expr>(std::move(condition)), 
+                        std::make_unique<Stmt>(std::move(thenBrach)),
+                        std::make_unique<Stmt>(std::move(elseBranch))
+                    } 
+                };
+}
+
 std::vector<Stmt> Parser::block() {
     std::vector<Stmt> statements;
 
-    while(!check(TokenType::RIGHT_BRACE) && !isAtEnd()) { // explicit isatend check to avoid inf loop incase of no closing brace
+    while(!check(TokenType::RIGHT_BRACE) && !isAtEnd()) { // explicit isatend() check to avoid inf loop incase of no closing brace
         statements.push_back(declaration());
     }
 
