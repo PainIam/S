@@ -20,7 +20,8 @@ Stmt Parser::declaration() {
 
         return statement();
     } catch (RunTimeError e) {
-        sync();
+        if (peek().type != TokenType::EOFF)
+            sync();
         return std::monostate{};
     }
 }
@@ -39,16 +40,28 @@ Stmt Parser::varDeclaration() {
 
 Stmt Parser::statement() {
     if (match({TokenType::HAEBA})) return ifStatement();
+    if (match({TokenType::PHETA_HA})) return whileStatement();
     if (match({TokenType::NGOLA})) return printStatement();
     if (match({TokenType::LEFT_BRACE})) return Stmt{Block{block()}};
 
     return exprStatement();
 }
 
+Stmt Parser::whileStatement() {
+    consume(TokenType::LEFT_PAREN, "lebelletsoe '(' kamora 'pheta'");
+    Expr condition = expression();
+    consume(TokenType::RIGHT_PAREN, "lebelletsoe ')' kamora polelo ea 'pheta'");
+
+    Stmt body = statement(); // consume preceding statements
+
+    return Stmt{WhileStmt{std::make_unique<Expr>(std::move(condition)), std::make_unique<Stmt>(std::move(body))}};
+
+}
+
 Stmt Parser::ifStatement() {
     consume(TokenType::LEFT_PAREN, "lebelletsoe '(' kamora 'haeba'");
     Expr condition = expression();
-    consume(TokenType::RIGHT_PAREN, "lebelletsoe ')' kamora polelo ea haeba");
+    consume(TokenType::RIGHT_PAREN, "lebelletsoe ')' kamora polelo ea 'haeba'");
 
     Stmt thenBrach = statement();
     Stmt elseBranch = std::monostate{};
@@ -133,7 +146,7 @@ Expr Parser::expression() {
 Expr Parser::assignment() {
 
     // get var.expr
-    Expr expr = equality();
+    Expr expr = logical_or();
 
     if (match({TokenType::EQUAL})) {
         Token token = previous();
@@ -147,6 +160,30 @@ Expr Parser::assignment() {
 
         error(token, "Ntho e abeloang ha ea nepahala."); // if expr is not a variable then we are assigning to some bs
 
+    }
+
+    return expr;
+}
+
+Expr Parser::logical_or() {
+    Expr expr = logical_and();
+
+    while (match({TokenType::LE, TokenType::KAPA})) {
+        Token op = previous();
+        Expr left = logical_and();
+        expr = Expr{Logical{std::make_unique<Expr>(std::move(expr)), op, std::make_unique<Expr>(std::move(expr))}};
+    }
+
+    return expr;
+}
+
+Expr Parser::logical_and() {
+    Expr expr = equality();
+
+    while (match({TokenType::LE, TokenType::KAPA})) {
+        Token op = previous();
+        Expr left = equality();
+        expr = Expr{Logical{std::make_unique<Expr>(std::move(expr)), op, std::make_unique<Expr>(std::move(expr))}};
     }
 
     return expr;
@@ -258,7 +295,7 @@ void Parser::sync() {
         switch(previous().type) {
             case TokenType::NTHO:
             case TokenType::HAEBA:
-            case TokenType::PHETA:
+            case TokenType::PHETA_HA:
             case TokenType::HAFEELA:
             case TokenType::SEBETSA:
             case TokenType::SEHLOPA:

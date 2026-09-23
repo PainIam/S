@@ -11,8 +11,9 @@ struct ExprStmt;
 struct VarStmt;
 struct Block;
 struct IfStmt;
+struct WhileStmt;
 
-using Stmt = std::variant<std::monostate, PrintStmt, ExprStmt, VarStmt, Block, IfStmt>;
+using Stmt = std::variant<std::monostate, PrintStmt, ExprStmt, VarStmt, Block, IfStmt, WhileStmt>;
 
 struct ExprStmt {
     std::unique_ptr<Expr> expr;
@@ -35,4 +36,9 @@ struct IfStmt {
     std::unique_ptr<Expr> condition;
     std::unique_ptr<Stmt> thenBranch;
     std::unique_ptr<Stmt> elseBranch;
+};
+
+struct WhileStmt {
+    std::unique_ptr<Expr> condition;
+    std::unique_ptr<Stmt> body;
 };

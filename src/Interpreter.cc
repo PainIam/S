@@ -86,6 +86,12 @@ void Interpreter::visitStmt(const Stmt& stmt) {
                 visitStmt(*node.elseBranch);
             }
         },
+        [this](const WhileStmt& node) {
+            while(is_true(interpret(*node.condition))) {
+                visitStmt(*node.body);
+            }
+
+        },
         [this](std::monostate){ return; } 
     }, stmt);
 }
@@ -186,6 +192,23 @@ Literal Interpreter::interpret(const Expr& expr) {
             environment->assign(node.name, object);
             
             return object;
+        },
+        [this](const Logical& node) -> Literal {
+            Literal left = interpret(*node.left);
+
+            // or -> return left if truthy : right otherwise, regardless
+            // and -> return left if falsey: last otherwise
+            if (node.op.type == TokenType::KAPA) {
+                if (is_true(left)) return left;
+            } else {
+                // is_true evals to false if left is falsey
+                // negate that to allow the condition to branch to the return
+                // thus returning the falsey object
+                // i hate dynamically typed languages, this makes no sense
+                if (!is_true(left)) return left;
+            }
+
+            return interpret(*node.right);
         }
     }, expr);
 }

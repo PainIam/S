@@ -10,9 +10,9 @@ struct Grouping;
 struct Unary;
 struct Var;
 struct Assign;
+struct Logical;
 
-
-using Expr = std::variant<Binary, Grouping, Literal, Unary, Var, Assign>;
+using Expr = std::variant<Binary, Grouping, Literal, Unary, Var, Assign, Logical>;
 
 
 struct Binary {
@@ -37,4 +37,10 @@ struct Var {
 struct Assign {
     Token name;
     std::unique_ptr<Expr> value;
+};
+
+struct Logical {
+    std::unique_ptr<Expr> left;
+    Token op;
+    std::unique_ptr<Expr> right;
 };

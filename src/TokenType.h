@@ -19,7 +19,7 @@ enum class TokenType : uint8_t {
 
     // keywords
     LE, HAEBA ,KAPA, HO_SENG_JOALO, NETE, LESHANO,          // AND, IF, OR, ELIF, TRUE, FALSE
-    PHETA, HAFEELA, NGOLA, NTHO, KHUTLA, SEHLOPA,           // WHILE, FOR, PRINT, VAR, RETURN, CLASS
+    PHETA_HA, HAFEELA, NGOLA, NTHO, KHUTLA, SEHLOPA,           // WHILE, FOR, PRINT, VAR, RETURN, CLASS
     NOTO, ENA, SEBETSA,                                     // NULL, THIS, FUN(CTION)
 
     EOFF

@@ -5,6 +5,7 @@
 
 
 #include "TokenType.h"
+
 std::string to_string(TokenType type);
 using Literal = std::variant<std::nullptr_t, double, std::string, bool>;
 

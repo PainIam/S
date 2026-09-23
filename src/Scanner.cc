@@ -9,7 +9,7 @@ Scanner::Scanner(const std::string& s) : source(s), keywords({
             {"ho_seng_joalo", TokenType::HO_SENG_JOALO},
             {"nete", TokenType::NETE},
             {"leshano", TokenType::LESHANO},
-            {"pheta", TokenType::PHETA},
+            {"pheta_ha", TokenType::PHETA_HA},
             {"hafeela", TokenType::HAFEELA},
             {"ngola", TokenType::NGOLA}, 
             {"ntho", TokenType::NTHO},

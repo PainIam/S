@@ -24,11 +24,14 @@ class Parser {
         Stmt varDeclaration();
         Stmt statement();
         Stmt ifStatement();
+        Stmt whileStatement();
         Stmt printStatement();
         Stmt exprStatement();
         std::vector<Stmt> block();
         Expr expression();
         Expr assignment();
+        Expr logical_or();
+        Expr logical_and();
         Expr equality();
         Expr comparison();
         Expr term();

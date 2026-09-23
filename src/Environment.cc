@@ -40,7 +40,10 @@ void Environment::assign(const Token& name, Literal value) {
     }
 
     // call parent env, follows same idea as get 
-    if (enclosing != nullptr) enclosing->assign(name, value);
+    if (enclosing != nullptr) {
+        enclosing->assign(name, value);
+        return;
+    }
 
     throw RunTimeError(name, "ntho e sieo (undefined object/variable) ' " + name.lexeme + " '.");
 }
