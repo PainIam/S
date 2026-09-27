@@ -41,6 +41,7 @@ Stmt Parser::varDeclaration() {
 Stmt Parser::statement() {
     if (match({TokenType::HAEBA})) return ifStatement();
     if (match({TokenType::PHETA_HA})) return whileStatement();
+    if (match({TokenType::HAFEELA})) return forStatement();
     if (match({TokenType::NGOLA})) return printStatement();
     if (match({TokenType::LEFT_BRACE})) return Stmt{Block{block()}};
 
@@ -57,6 +58,76 @@ Stmt Parser::whileStatement() {
     return Stmt{WhileStmt{std::make_unique<Expr>(std::move(condition)), std::make_unique<Stmt>(std::move(body))}};
 
 }
+
+Stmt Parser::forStatement() {
+    /*
+        syntactic sugar for the for loop
+        wrap the statements to be exucuted by the loop and the incremental statement in to
+        a block statement, respectively. if condition is not null, wrap the condition and the
+        already existing block into a whileStmt, if there exists a declaration or initialization
+        wrap it in a another block statement consisting of the declaration and the whileStmt
+        and return the block of blocks, it surely cannot get more abstract than this
+    */
+    consume(TokenType::LEFT_PAREN, "lebelletsoe '(' kamora 'hafeela'");
+
+    // check if there exists an initializer 
+    Stmt initializer {};
+    if (match({TokenType::SEMICOLON})) {
+        initializer = std::monostate{};
+    } else if (match({TokenType::NTHO})) {
+        initializer = varDeclaration();
+    } else {
+        initializer = exprStatement();
+    }
+
+    Expr condition = nullptr;
+    if (!check(TokenType::SEMICOLON)) {
+        condition = expression();
+    }
+    consume(TokenType::SEMICOLON, "lebelletsoe ';' kamora polelo ea 'hafeela'");
+
+    Expr increment = nullptr;
+    if (!check(TokenType::RIGHT_PAREN)) {
+        increment = expression();
+    }
+    consume(TokenType::RIGHT_PAREN, "lebelletsoe ';' kamora polelo tsa 'hafeela'");
+
+    Stmt body = statement();
+
+
+    if (!std::holds_alternative<Literal>(increment) ||
+        !std::holds_alternative<std::nullptr_t>(std::get<Literal>(increment))) {
+            // increment is NOT empty — proceed with folding it in
+            Stmt incrStmt = ExprStmt { std::make_unique<Expr>(std::move(increment)) };
+
+            std::vector<Stmt> v;
+            v.push_back(std::move(body));
+            v.push_back(std::move(incrStmt));
+
+            body = Block { std::move(v) }; 
+    }
+
+    if (std::holds_alternative<Literal>(condition) &&
+        std::holds_alternative<nullptr_t>(std::get<Literal>(condition))) {
+            condition = Expr{Literal{true}};
+        }
+
+    body = WhileStmt{
+        std::make_unique<Expr>(std::move(condition)),
+        std::make_unique<Stmt>(std::move(body)) // statement and the incremental, respectively
+    };
+
+    // precede the body with an initializer(if any) followed by the stmt + incremental
+    if (!std::holds_alternative<std::monostate>(initializer)) {
+        std::vector<Stmt> v;
+        v.push_back(std::move(initializer));
+        v.push_back(std::move(body));
+        body = Block { std::move(v) };
+    }
+
+    return body;
+}
+
 
 Stmt Parser::ifStatement() {
     consume(TokenType::LEFT_PAREN, "lebelletsoe '(' kamora 'haeba'");

@@ -25,6 +25,7 @@ class Parser {
         Stmt statement();
         Stmt ifStatement();
         Stmt whileStatement();
+        Stmt forStatement();
         Stmt printStatement();
         Stmt exprStatement();
         std::vector<Stmt> block();
