@@ -1,6 +1,7 @@
 #pragma once
 #include <variant>
 #include <string>
+#include <memory>
 #include <vector>
 
 #include "Expr.h"
@@ -17,11 +18,13 @@ private:
     void checkNumberOperands(const Token& op, const Literal& left, const Literal& right);
     void checkNumberOperands(const Token& op, const Literal& object);
     void visitStmt(const Stmt& stmt);
-    Environment* environment;
-    void executeBlock(const std::vector<Stmt>& statements, Environment* env);
+    std::shared_ptr<Environment> environment;
+    void executeBlock(const std::vector<Stmt>& statements, std::shared_ptr<Environment> env);
 
 public:
     Interpreter();
+    Interpreter(const Interpreter& interpreter) = delete;
+    Interpreter& operator=(const Interpreter& interpreter) = delete;
     ~Interpreter();
     void execute(const std::vector<Stmt>& statements);
 

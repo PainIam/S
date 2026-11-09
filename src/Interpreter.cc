@@ -7,8 +7,8 @@
 
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
 
-Interpreter::Interpreter() { environment = new Environment(); }
-Interpreter::~Interpreter() { delete environment; }
+Interpreter::Interpreter() { environment = std::make_shared<Environment>(); }
+Interpreter::~Interpreter() { }
 
 void Interpreter::execute(const std::vector<Stmt>& statements) {
     try {
@@ -77,7 +77,7 @@ void Interpreter::visitStmt(const Stmt& stmt) {
             environment->define(node.name.lexeme, object);
         },
         [this](const Block& node) {
-            executeBlock(node.statements, new Environment(*environment));
+            executeBlock(node.statements, std::make_shared<Environment>(*environment));
         },
         [this](const IfStmt& node) {
             if (is_true(interpret(*node.condition))) {
@@ -96,8 +96,8 @@ void Interpreter::visitStmt(const Stmt& stmt) {
     }, stmt);
 }
 
-void Interpreter::executeBlock(const std::vector<Stmt>& statements, Environment* env) {
-    Environment* previous = this->environment;
+void Interpreter::executeBlock(const std::vector<Stmt>& statements, std::shared_ptr<Environment> env) {
+    std::shared_ptr<Environment> previous = this->environment;
 
     this->environment = env;
     try {
@@ -106,12 +106,9 @@ void Interpreter::executeBlock(const std::vector<Stmt>& statements, Environment*
         }
     } catch (...) {
         this->environment = previous;
-        delete env;
-        throw;
     }
 
     this->environment = previous;
-    delete env;
 }
 
 Literal Interpreter::interpret(const Expr& expr) {
