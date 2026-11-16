@@ -19,8 +19,6 @@ void Interpreter::execute(const std::vector<Stmt>& statements) {
     }
 }
 
-
-
 void Interpreter::checkNumberOperands(const Token& op, const Literal& left, const Literal& right) {
     if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) {
         return;

@@ -111,7 +111,7 @@ Stmt Parser::forStatement() {
         std::holds_alternative<nullptr_t>(std::get<Literal>(condition))) {
             condition = Expr{Literal{true}};
         }
-
+    
     body = WhileStmt{
         std::make_unique<Expr>(std::move(condition)),
         std::make_unique<Stmt>(std::move(body)) // statement and the incremental, respectively

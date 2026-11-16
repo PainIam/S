@@ -21,7 +21,7 @@ class S {
     private:
         bool hadError = false;
         bool hadRunTimeError = false;
-        Interpreter interpreter = Interpreter();
+        Interpreter interpreter {};
     
         void report(int line, const std::string& where, const std::string& message) {
             std::cerr << "mola [" << line << "] Phoso " << where << ": " << message << "\n";
